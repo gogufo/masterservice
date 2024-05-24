@@ -1,4 +1,4 @@
-# masterservice Microservice
+# Masterservice Microservice
 
 Master Service is a part of GUFO API Gateway. Store data of all microservices. it's host, port, version, etc. Also This microservice is coordinate cron jobs of other microservices, to avoid from double cron job in case if running few replics of the same microservice
 
@@ -35,5 +35,5 @@ type = 'server'
 host = 'masterservice'
 port = '5300'
 entrypointversion = '1.0.0'
-cron = 'false'
+internal = 'true'
 ```

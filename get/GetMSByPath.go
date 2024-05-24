@@ -9,11 +9,18 @@ import (
 	"github.com/spf13/viper"
 )
 
+// api/v3/auth/sigin
+// api/v3/catalog/inventory/
 func GetMSByPath(t *pb.Request) (response *pb.Response) {
 	ans := make(map[string]interface{})
 
-	paramid := *t.ParamID
-	param := *t.Param
+	module := *t.Module
+
+	groupid := ""
+
+	if t.Param != nil {
+		groupid = *t.Param
+	}
 
 	cur := &Microservices{}
 
@@ -29,15 +36,15 @@ func GetMSByPath(t *pb.Request) (response *pb.Response) {
 
 	if t.ParamID != nil {
 		mcur := &Microservices{}
-		rows := db.Conn.Debug().Model(&mcur).Where("name = ? AND isactive = true AND group = ?", paramid, param).First(&mcur)
+		rows := db.Conn.Debug().Model(&mcur).Where("name = ? AND isactive = true AND group = ?", groupid, module).First(&mcur)
 		if rows.RowsAffected == 0 {
-			db.Conn.Debug().Model(&cur).Where("name = ? AND isactive = true", param).First(&cur)
+			db.Conn.Debug().Model(&cur).Where("name = ? AND isactive = true", module).First(&cur)
 		} else {
 			cur.Host = mcur.Host
 			cur.Port = mcur.Port
 		}
 	} else {
-		db.Conn.Debug().Model(&cur).Where("name = ? AND isactive = true", param).First(&cur)
+		db.Conn.Debug().Model(&cur).Where("name = ? AND isactive = true", module).First(&cur)
 	}
 
 	ans["host"] = cur.Host

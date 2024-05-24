@@ -9,10 +9,10 @@ import (
 	"github.com/spf13/viper"
 )
 
-func GetSessionHost(t *pb.Request) (response *pb.Response) {
+func CheckByUUID(t *pb.Request) (response *pb.Response) {
 	ans := make(map[string]interface{})
 
-	cur := &Microservices{}
+	uuid := *t.ParamID
 
 	db, err := ConnectDBv2()
 	if err != nil {
@@ -24,12 +24,18 @@ func GetSessionHost(t *pb.Request) (response *pb.Response) {
 		return ErrorReturn(t, 500, "000027", err.Error())
 	}
 
-	db.Conn.Debug().Model(&cur).Where("issession = true AND isactive = true").First(&cur)
+	ans["answer"] = true
 
-	ans["host"] = cur.Host
-	ans["port"] = cur.Port
-	ans["name"] = cur.Name
-	ans["isinternal"] = cur.IsInternal
+	mcur := &Microservices{}
+	rows := db.Conn.Debug().Model(&mcur).Where("uuid = ? AND isactive = true", uuid).First(&mcur)
+	if rows.RowsAffected == 0 {
+		ans["answer"] = false
+		ans["name"] = mcur.Name
+		ans["port"] = mcur.Port
+		ans["host"] = mcur.Host
+		ans["isinternal"] = mcur.IsInternal
+
+	}
 
 	response = Interfacetoresponse(t, ans)
 	return response

@@ -1,6 +1,8 @@
 package post
 
 import (
+	. "masterservice/global"
+
 	. "github.com/gogufo/gufo-api-gateway/gufodao"
 	pb "github.com/gogufo/gufo-api-gateway/proto/go"
 )
@@ -26,7 +28,14 @@ Endpoints
 
 func Init(t *pb.Request) (response *pb.Response) {
 
-	switch *t.Param {
+	param := *t.Param
+
+	if *t.Module != MicroServiceName {
+
+		param = *t.IR.Param
+	}
+
+	switch param {
 	case "checkin":
 		response = CheckIn(t)
 	case "checkout":

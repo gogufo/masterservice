@@ -2,6 +2,7 @@ package main
 
 import (
 	gt "masterservice/get"
+	. "masterservice/global"
 	pa "masterservice/patch"
 	pt "masterservice/post"
 
@@ -30,9 +31,17 @@ Endpoints
 
 func Init(t *pb.Request) (response *pb.Response) {
 
-	switch *t.Method {
+	method := *t.Method
+	param := *t.Param
+
+	if *t.Module != MicroServiceName {
+		method = *t.IR.Method
+		param = *t.IR.Param
+	}
+
+	switch method {
 	case "GET":
-		switch *t.Param {
+		switch param {
 		case "health":
 			response = health(t)
 		default:
@@ -42,6 +51,8 @@ func Init(t *pb.Request) (response *pb.Response) {
 		response = pt.Init(t)
 	case "PATCH":
 		response = pa.Init(t)
+	default:
+		response = ErrorReturn(t, 404, "000012", "Missing argument")
 
 	}
 

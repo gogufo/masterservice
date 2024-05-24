@@ -1,6 +1,8 @@
 package get
 
 import (
+	. "masterservice/global"
+
 	. "github.com/gogufo/gufo-api-gateway/gufodao"
 	pb "github.com/gogufo/gufo-api-gateway/proto/go"
 )
@@ -30,13 +32,22 @@ Endpoints
 
 func Init(t *pb.Request) (response *pb.Response) {
 
-	switch *t.Param {
+	param := *t.Param
+
+	if *t.Module != MicroServiceName {
+
+		param = *t.IR.Param
+	}
+
+	switch param {
 	case "list":
 		response = List(t)
 	case "getmicroservicebypath":
 		response = GetMSByPath(t)
 	case "getsessionhost":
 		response = GetSessionHost(t)
+	case "checkbyuuid":
+		response = CheckByUUID(t)
 	default:
 		response = ErrorReturn(t, 404, "000012", "Missing argument")
 	}
