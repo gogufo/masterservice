@@ -16,6 +16,7 @@ FROM ubuntu
 
 COPY --from=builder /go/bin/masterservice /go/bin/masterservice
 COPY --from=builder /go/bin/config/ /go/bin/config/
+COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 
 
 WORKDIR /go/bin/
