@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.0
+- Update to Gufo v1.17.1
+- Update Golang version to 1.23
+
 ## 1.1.0 (24/05/24)
 - Update to Gufo 1.14.1
 - Bug fixing

@@ -1,11 +1,11 @@
 module masterservice
 
-go 1.21.6
+go 1.23.0
 
 require (
 	github.com/certifi/gocertifi v0.0.0-20210507211836-431795d63e8d
 	github.com/getsentry/sentry-go v0.27.0
-	github.com/gogufo/gufo-api-gateway v1.17.0
+	github.com/gogufo/gufo-api-gateway v1.17.1
 	github.com/microcosm-cc/bluemonday v1.0.26
 	github.com/spf13/viper v1.18.2
 	golang.org/x/net v0.24.0
