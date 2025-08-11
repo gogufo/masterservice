@@ -40,6 +40,8 @@ func Init(t *pb.Request) (response *pb.Response) {
 		response = CheckIn(t)
 	case "checkout":
 		response = CheckOut(t)
+	case "restart":
+		response = Restart(t)
 	case "getcronmandate":
 		response = GetCronMandate(t)
 	default:

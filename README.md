@@ -22,6 +22,7 @@ docker run --name masterservice \
 --restart=always \
 -v $(pwd)/config:/var/gufo/config \
 -v $(pwd)/logs:/var/gufo/log \
+-v /var/run/docker.sock:/var/run/docker.sock \
 --network="gufo" \
 -d masterservice:latest
 ```
