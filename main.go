@@ -7,6 +7,7 @@ import (
 	. "masterservice/version"
 	"net"
 	"os"
+	"strings"
 	"time"
 
 	pb "github.com/gogufo/gufo-api-gateway/proto/go"
@@ -107,10 +108,34 @@ type Server struct {
 
 func (s *Server) Do(c context.Context, request *pb.Request) (response *pb.Response, err error) {
 
-	//Check for Sign
-	sign := viper.GetString("server.sign")
-	if sign != *request.Sign {
-		return ErrorReturn(request, 401, "00001", "You are not authorized"), nil
+	/// ==========================
+	//  SECURITY CHECK (unified with Gufo Gateway)
+	// ==========================
+	mode := strings.ToLower(viper.GetString("security.mode"))
+
+	switch mode {
+
+	case "hmac":
+		secret := viper.GetString("security.hmac_secret")
+		maxAge := time.Duration(viper.GetInt("security.max_age")) * time.Second
+
+		if request.Sign == nil || request.Module == nil ||
+			!VerifyHMAC(secret, *request.Module, *request.Sign, maxAge) {
+
+			return ErrorReturn(request, 401, "00001", "Invalid or expired HMAC signature"), nil
+		}
+
+	case "sign":
+		if request.Sign == nil || viper.GetString("server.sign") != *request.Sign {
+			return ErrorReturn(request, 401, "00001", "Invalid signature"), nil
+		}
+
+	case "mtls":
+		// gRPC TLS already validated client certificate if configured
+		SetLog("mTLS mode active - skipping sign verification")
+
+	default:
+		return ErrorReturn(request, 500, "00002", "Security mode not configured"), nil
 	}
 
 	//Check connection
